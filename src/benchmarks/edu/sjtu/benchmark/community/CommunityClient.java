@@ -1,4 +1,4 @@
-package edu.sjtu.benchmark.Community
+package edu.sjtu.benchmark.community;
  
 import java.io.IOException;
 import java.util.Random;

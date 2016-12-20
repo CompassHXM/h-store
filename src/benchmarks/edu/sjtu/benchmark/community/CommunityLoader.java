@@ -1,22 +1,35 @@
-package edu.sjtu.benchmark.community
+package edu.sjtu.benchmark.community;
  
+import java.util.Random;
+
+import org.apache.log4j.Logger;
+import org.voltdb.CatalogContext;
 import org.voltdb.catalog.*;
+import org.voltdb.VoltTable;
 import org.voltdb.client.Client;
+
+import edu.brown.api.BenchmarkComponent;
 import edu.brown.api.Loader;
+import edu.brown.benchmark.wikipedia.util.TextGenerator;
 import edu.brown.catalog.CatalogUtil;
  
 public class CommunityLoader extends Loader {
  
+    private final Random rng = new Random();
+    private static final Logger LOG = Logger.getLogger(CommunityLoader.class);
+    
     public static void main(String args[]) throws Exception {
-        BenchmarkComponent.main(ABCLoader.class, args, true);
+        BenchmarkComponent.main(CommunityLoader.class, args, true);
+       
     }
- 
+
     public CommunityLoader(String[] args) {
         super(args);
         for (String key : m_extraParams.keySet()) {
             if (key == "data_file") {
-                //String value = ;
-                //print some log
+                String value = m_extraParams.get(key);
+                if (LOG.isDebugEnabled())
+                    LOG.debug("key = " + key + ", value = " + value);
             }
             // TODO: Retrieve extra configuration parameters
         } // FOR
@@ -26,18 +39,25 @@ public class CommunityLoader extends Loader {
     public void load() {
         // The catalog contains all the information about the database (e.g., tables, columns, indexes)
         // It is loaded from the benchmark's project JAR file
-        Catalog catalog = this.getCatalog();
- 
-        // Iterate over all of the Table handles in the catalog and generate
-        // tuples to upload into the database
-        for (Table catalog_tbl : CatalogUtil.getDatabase(catalog).getTables()) {
-            // TODO: Create an empty VoltTable handle and then populate it in batches to 
-            //       be sent to the DBMS
-            VoltTable table = CatalogUtil.getVoltTable(catalog_tbl);
- 
-            // Invoke the BenchmarkComponent's data loading method
-            // This will upload the contents of the VoltTable into the DBMS cluster
-            this.loadVoltTable(catalog_tbl.getName(), table);
-        } // FOR
+        final CatalogContext catalogContext = this.getCatalogContext();
+        Table catalog_tbl = catalogContext.database.getTables().getIgnoreCase("items");
+        assert(catalog_tbl != null);
+        VoltTable vt = CatalogUtil.getVoltTable(catalog_tbl);
+        int num_cols = catalog_tbl.getColumns().size();
+        
+        for (int i=0;i<10;i++)
+        {
+            Object row[] = new Object[num_cols];
+            String name = TextGenerator.randomStr(rng,10);
+            row[0] = i;
+            row[1] = name;
+            row[2] = 10;
+            
+            vt.addRow(row);
+            this.loadVoltTable(catalog_tbl.getName(), vt);
+            vt.clearRowData();
+            if (LOG.isDebugEnabled())
+                LOG.debug("What happend???");
+        }
     }
 }
