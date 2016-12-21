@@ -2,11 +2,15 @@ package edu.sjtu.benchmark.community;
  
 import java.io.IOException;
 import java.util.Random;
+
+import org.apache.log4j.Logger;
 import org.voltdb.client.*;
 import edu.brown.api.BenchmarkComponent;
  
 public class CommunityClient extends BenchmarkComponent {
- 
+
+    private static final Logger LOG = Logger.getLogger(CommunityLoader.class);
+    
     public static void main(String args[]) {
         BenchmarkComponent.main(CommunityClient.class, args, false);
     }
@@ -15,6 +19,11 @@ public class CommunityClient extends BenchmarkComponent {
         super(args);
         for (String key : m_extraParams.keySet()) {
             // TODO: Retrieve extra configuration parameters
+            if (key == "client_num"){
+                String value = m_extraParams.get(key);
+                if (LOG.isDebugEnabled())
+                    LOG.debug("key = " + key + ", value = " + value);
+            }
         } // FOR
     }
  
