@@ -16,9 +16,6 @@ public class CommunityClient extends BenchmarkComponent {
         BenchmarkComponent.main(CommunityClient.class, args, false);
     }
     
-    public static void incrementTransactionCounter(int id) {
-    	counter[id] ++;
-    }
  
     public CommunityClient(String[] args) {
         super(args);
@@ -26,6 +23,7 @@ public class CommunityClient extends BenchmarkComponent {
             // TODO: Retrieve extra configuration parameters
             if (key == "client_num"){
                 String value = m_extraParams.get(key);
+		System.out.println("value = "+ value);
                 if (LOG.isDebugEnabled())
                     LOG.debug("key = " + key + ", value = " + value);
             }
@@ -36,23 +34,23 @@ public class CommunityClient extends BenchmarkComponent {
     public void runLoop() {
         try {
             Client client = this.getClientHandle();
-            Random rand = new Random();
             while (true) {
                 // Select a random transaction to execute and generate its input parameters
                 // The procedure index (procIdx) needs to the same as the array of procedure
                 // names returned by getTransactionDisplayNames()
-                int procIdx = rand.nextInt(CommunityProjectBuilder.PROCEDURES.length);
-                String procName = CommunityProjectBuilder.PROCEDURES[procIdx].getSimpleName();
-                Object procParams[] = null; // TODO
+      //          int procIdx = rand.nextInt(CommunityProjectBuilder.PROCEDURES.length);
+  //              String procName = CommunityProjectBuilder.PROCEDURES[procIdx].getSimpleName();
+     //           Object procParams[] = null; // TODO
  
                 // Create a new Callback handle that will be executed when the transaction completes
-                Callback callback = new Callback(procIdx);
+   //             Callback callback = new Callback(procIdx);
  
                 // Invoke the stored procedure through the client handle. This is non-blocking
-                client.callProcedure(callback, procName, procIdx);
+    //            client.callProcedure(callback, procName, procIdx);
  
                 // Check whether all the nodes are backed-up and this client should block
                 // before sending new requests. 
+            	runOnce();
                 client.backpressureBarrier();
             } // WHILE
         } catch (NoConnectionsException e) {
@@ -67,6 +65,19 @@ public class CommunityClient extends BenchmarkComponent {
         }
     }
  
+    @Override
+    public boolean runOnce() throws IOException {
+    	Object params[];
+    	Random rand = new Random();
+        int param = rand.nextInt(CommunityProjectBuilder.PROCEDURES.length);;
+//      System.out.println("Read " + param);
+        params = new Object[]{ param };
+        String procName = CommunityProjectBuilder.PROCEDURES[param].getSimpleName();
+        assert(params != null);
+        
+        Callback callback = new Callback(param);
+        return this.getClientHandle().callProcedure(callback, procName, params);
+    } 
     private class Callback implements ProcedureCallback {
         private final int idx;
  
@@ -77,7 +88,7 @@ public class CommunityClient extends BenchmarkComponent {
         public void clientCallback(ClientResponse clientResponse) {
             // Increment the BenchmarkComponent's internal counter on the
             // number of transactions that have been completed
-            incrementTransactionCounter(this.idx);
+            incrementTransactionCounter(clientResponse,this.idx);
         }
     } // END CLASS
  

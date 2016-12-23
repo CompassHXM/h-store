@@ -28,6 +28,6 @@ public class CommunityProjectBuilder extends AbstractProjectBuilder {
     public CommunityProjectBuilder() {
         super("community", CommunityProjectBuilder.class, PROCEDURES, PARTITIONING);
         // Create a single-statement stored procedure named 'DeleteData'
-        addStmtProcedure("DeleteData", "DELETE FROM TABLEA WHERE I_ID < ?");
+//        addStmtProcedure("DeleteData", "DELETE FROM ITEMS WHERE I_ID < ?");
     }
 }
