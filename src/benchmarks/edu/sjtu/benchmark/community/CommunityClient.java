@@ -10,9 +10,14 @@ import edu.brown.api.BenchmarkComponent;
 public class CommunityClient extends BenchmarkComponent {
 
     private static final Logger LOG = Logger.getLogger(CommunityLoader.class);
+    private static final int counter[] = new int[100];
     
     public static void main(String args[]) {
         BenchmarkComponent.main(CommunityClient.class, args, false);
+    }
+    
+    public static void incrementTransactionCounter(int id) {
+    	counter[id] ++;
     }
  
     public CommunityClient(String[] args) {
