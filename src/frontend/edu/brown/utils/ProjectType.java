@@ -53,6 +53,7 @@ public enum ProjectType {
     ARTICLES ("Articles", "edu.brown.benchmark.articles"),
     USERS ("Users", "edu.brown.benchmark.users"),
     COMMUNITY ("Community", "edu.sjtu.benchmark.community"),
+    LINKBENCH("linkbench", "edu.sjtu.oltpbenchmark.benchmark.linkbench"),
     TEST("Test", null),
     ;
 
