@@ -35,21 +35,6 @@ public class CommunityClient extends BenchmarkComponent {
         try {
             Client client = this.getClientHandle();
             while (true) {
-                // Select a random transaction to execute and generate its input parameters
-                // The procedure index (procIdx) needs to the same as the array of procedure
-                // names returned by getTransactionDisplayNames()
-      //          int procIdx = rand.nextInt(CommunityProjectBuilder.PROCEDURES.length);
-  //              String procName = CommunityProjectBuilder.PROCEDURES[procIdx].getSimpleName();
-     //           Object procParams[] = null; // TODO
- 
-                // Create a new Callback handle that will be executed when the transaction completes
-   //             Callback callback = new Callback(procIdx);
- 
-                // Invoke the stored procedure through the client handle. This is non-blocking
-    //            client.callProcedure(callback, procName, procIdx);
- 
-                // Check whether all the nodes are backed-up and this client should block
-                // before sending new requests. 
             	runOnce();
                 client.backpressureBarrier();
             } // WHILE
