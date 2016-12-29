@@ -27,7 +27,7 @@ public class CommunityGraphLoader{
 	public GraphEdge readNextEdge() throws IOException {
 		int item0 = Integer.MAX_VALUE;
 		int item1 = Integer.MAX_VALUE;
-		while(item0 > max_item_id) {
+		while(item1 > max_item_id) {
 			String line = br.readLine();
 			if (line == null) return null;
 			String[] sa = line.split("\\s+");
