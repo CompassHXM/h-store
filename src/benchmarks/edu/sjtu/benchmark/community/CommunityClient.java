@@ -23,7 +23,6 @@ public class CommunityClient extends BenchmarkComponent {
             // TODO: Retrieve extra configuration parameters
             if (key == "client_num"){
                 String value = m_extraParams.get(key);
-		System.out.println("value = "+ value);
                 if (LOG.isDebugEnabled())
                     LOG.debug("key = " + key + ", value = " + value);
             }
@@ -34,6 +33,7 @@ public class CommunityClient extends BenchmarkComponent {
     public void runLoop() {
         try {
             Client client = this.getClientHandle();
+            LOG.info("OUR Client is Running now!");
             while (true) {
             	runOnce();
                 client.backpressureBarrier();
