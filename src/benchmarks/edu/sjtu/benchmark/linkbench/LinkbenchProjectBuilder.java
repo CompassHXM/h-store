@@ -17,17 +17,17 @@ public class LinkbenchProjectBuilder extends AbstractProjectBuilder {
  
     @SuppressWarnings("unchecked")
     public static final Class<? extends VoltProcedure> PROCEDURES[] = (Class<? extends VoltProcedure>[]) new Class<?>[] {
-        GetData.class
+        GetNode.class
     };
     
     public static final String PARTITIONING[][] = new String[][] {
         // { "TABLE NAME", "PARTITIONING COLUMN NAME" }
-        {"ITEMS", "I_ID"}
+        {"nodetable", "id"}
     };
  
     public LinkbenchProjectBuilder() {
         super("linkbench", LinkbenchProjectBuilder.class, PROCEDURES, PARTITIONING);
         // Create a single-statement stored procedure named 'DeleteData'
-//        addStmtProcedure("DeleteData", "DELETE FROM ITEMS WHERE I_ID < ?");
+
     }
 }
