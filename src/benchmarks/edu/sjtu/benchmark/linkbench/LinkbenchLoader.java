@@ -40,7 +40,7 @@ public class LinkbenchLoader extends Loader {
         // The catalog contains all the information about the database (e.g., tables, columns, indexes)
         // It is loaded from the benchmark's project JAR file
         final CatalogContext catalogContext = this.getCatalogContext();
-        Table catalog_tbl = catalogContext.database.getTables().getIgnoreCase("items");
+        Table catalog_tbl = catalogContext.database.getTables().getIgnoreCase(LinkbenchConstants.TABLENAME_NODE);
         assert(catalog_tbl != null);
         VoltTable vt = CatalogUtil.getVoltTable(catalog_tbl);
         int num_cols = catalog_tbl.getColumns().size();
