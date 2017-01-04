@@ -22,7 +22,8 @@ public class LinkbenchProjectBuilder extends AbstractProjectBuilder {
     
     public static final String PARTITIONING[][] = new String[][] {
         // { "TABLE NAME", "PARTITIONING COLUMN NAME" }
-        {"nodetable", "id"}
+        {LinkbenchConstants.TABLENAME_NODE, "id"},
+        {LinkbenchConstants.TABLENAME_LINK, "id1"}
     };
  
     public LinkbenchProjectBuilder() {

@@ -11,7 +11,7 @@ public class LinkbenchGraphLoader{
 	String filename;
 	BufferedReader br = null;
 	
-	int max_item_id = Integer.MAX_VALUE;
+	int max_node_id = Integer.MAX_VALUE;
 	public LinkbenchGraphLoader(String filename) throws FileNotFoundException {
 		this.filename = filename;
 		if(filename==null || filename.isEmpty())
@@ -21,26 +21,26 @@ public class LinkbenchGraphLoader{
 		FileReader fr = new FileReader(file);
 		br = new BufferedReader(fr);
 	}
-	public void setMaxItemId(int max_item_id) {
-		this.max_item_id = max_item_id;
+	public void setMaxnodeId(int max_node_id) {
+		this.max_node_id = max_node_id;
 	}
 	public GraphEdge readNextEdge() throws IOException {
-		int item0 = Integer.MAX_VALUE;
-		int item1 = Integer.MAX_VALUE;
-		while(item1 > max_item_id) {
+		int node0 = Integer.MAX_VALUE;
+		int node1 = Integer.MAX_VALUE;
+		while(node1 > max_node_id) {
 			String line = br.readLine();
 			if (line == null) return null;
 			String[] sa = line.split("\\s+");
-			item0 = Integer.parseInt(sa[0]);
-			item1 = Integer.parseInt(sa[1]);
-			System.out.println(item0+" "+item1);
+			node0 = Integer.parseInt(sa[0]);
+			node1 = Integer.parseInt(sa[1]);
+			System.out.println(node0+" "+node1);
 		}
 		
 
-		if(item0 > max_item_id) {
+		if(node0 > max_node_id) {
 			return null;
 		}
 		
-		return new GraphEdge(item0,item1);
+		return new GraphEdge(node0,node1);
 	}
 };

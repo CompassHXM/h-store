@@ -1,5 +1,6 @@
 package edu.sjtu.benchmark.linkbench;
  
+import java.io.IOException;
 import java.util.Random;
 
 import org.apache.log4j.Logger;
@@ -26,7 +27,7 @@ public class LinkbenchLoader extends Loader {
     public LinkbenchLoader(String[] args) {
         super(args);
         for (String key : m_extraParams.keySet()) {
-            if (key == "data_file") {
+            if (key == "network_file") {
                 String value = m_extraParams.get(key);
                 if (LOG.isDebugEnabled())
                     LOG.debug("key = " + key + ", value = " + value);
@@ -34,29 +35,16 @@ public class LinkbenchLoader extends Loader {
             // TODO: Retrieve extra configuration parameters
         } // FOR
     }
- 
+    protected void loadNodes(Database catalog_db) throws IOException {
+    	Table catalog_tbl_nodes = catalog_db.getTables().getIgnoreCase(LinkbenchConstants.TABLENAME_NODE);
+    	assert(catalog_tbl_nodes != null);
+    	VoltTable vt_nodes = CatalogUtil.getVoltTable(catalog_tbl_nodes);
+    	int num_cols_nodes = catalog_tbl_nodes.getColumns().size();
+    	
+    }
     @Override
-    public void load() {
-        // The catalog contains all the information about the database (e.g., tables, columns, indexes)
-        // It is loaded from the benchmark's project JAR file
-        final CatalogContext catalogContext = this.getCatalogContext();
-        Table catalog_tbl = catalogContext.database.getTables().getIgnoreCase(LinkbenchConstants.TABLENAME_NODE);
-        assert(catalog_tbl != null);
-        VoltTable vt = CatalogUtil.getVoltTable(catalog_tbl);
-        int num_cols = catalog_tbl.getColumns().size();
-        
-        for (int i=0;i<10;i++)
-        {
-            Object row[] = new Object[num_cols];
-            String name = TextGenerator.randomStr(rng,10);
-            row[0] = i;
-            row[1] = name;
-            row[2] = 10;
-            
-            vt.addRow(row);
-            this.loadVoltTable(catalog_tbl.getName(), vt);
-            vt.clearRowData();
-            LOG.info("Loading " + i);
-        }
+    public void load() throws IOException {
+    	final CatalogContext catalogContext = this.getCatalogContext();
+    	loadNodes(catalogContext.database);
     }
 }
