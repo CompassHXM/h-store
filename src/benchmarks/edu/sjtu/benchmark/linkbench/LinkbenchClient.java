@@ -6,67 +6,23 @@ import java.util.Random;
 import org.apache.log4j.Logger;
 import org.voltdb.client.*;
 import edu.brown.api.BenchmarkComponent;
+import edu.brown.rand.RandomDistribution.FlatHistogram;
+import edu.brown.statistics.ObjectHistogram;
+import edu.sjtu.benchmark.linkbench.util.GraphTransactionGenerator;
+import edu.sjtu.benchmark.linkbench.util.LinkbenchOperation;
  
 public class LinkbenchClient extends BenchmarkComponent {
 
     private static final Logger LOG = Logger.getLogger(LinkbenchClient.class);
-    private static final int counter[] = new int[100];
+    //private static final int counter[] = new int[100];
+ 
     
-    public static void main(String args[]) {
-        BenchmarkComponent.main(LinkbenchClient.class, args, false);
-    }
     
- 
-    public LinkbenchClient(String[] args) {
-        super(args);
-        for (String key : m_extraParams.keySet()) {
-            // TODO: Retrieve extra configuration parameters
-            if (key == "client_num"){
-                String value = m_extraParams.get(key);
-                if (LOG.isDebugEnabled())
-                    LOG.debug("key = " + key + ", value = " + value);
-            }
-        } // FOR
-    }
- 
-    @Override
-    public void runLoop() {
-        try {
-            Client client = this.getClientHandle();
-            LOG.info("OUR Client is Running now!");
-            while (true) {
-            	runOnce();
-                client.backpressureBarrier();
-            } // WHILE
-        } catch (NoConnectionsException e) {
-            // Client has no clean mechanism for terminating with the DB.
-            return;
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            // At shutdown an IOException is thrown for every connection to
-            // the DB that is lost Ignore the exception here in order to not
-            // get spammed, but will miss lost connections at runtime
-        }
-    }
- 
-    @Override
-    public boolean runOnce() throws IOException {
-    	Object params[];
-    	Random rand = new Random();
-        int param = rand.nextInt(LinkbenchProjectBuilder.PROCEDURES.length);;
-//      System.out.println("Read " + param);
-        params = new Object[]{ param };
-        String procName = LinkbenchProjectBuilder.PROCEDURES[param].getSimpleName();
-        assert(params != null);
-        
-        Callback callback = new Callback(param);
-        return this.getClientHandle().callProcedure(callback, procName, params);
-    } 
-    private class Callback implements ProcedureCallback {
+    
+    private class LinkbenchCallback implements ProcedureCallback {
         private final int idx;
  
-        public Callback(int idx) {
+        public LinkbenchCallback(int idx) {
             this.idx = idx;
         }
         @Override
@@ -76,14 +32,144 @@ public class LinkbenchClient extends BenchmarkComponent {
             incrementTransactionCounter(clientResponse,this.idx);
         }
     } // END CLASS
+   
+    
+    private final FlatHistogram<Transaction> txnWeights;
+    
+    //callback
+    protected final LinkbenchCallback callbacks[];
+    
+    public static enum Transaction {
+    	GET_NODE("Get Node", LinkbenchConstants.FREQ_GET_NODE);
+        
+        /**
+         * Constructor
+         */
+        private Transaction(String displayName, int weight) {
+            this.displayName = displayName;
+            this.callName = displayName.replace(" ", "");
+            this.weight = weight;
+        }
+        
+        public final String displayName;
+        public final String callName;
+        public final int weight; // probability (in terms of percentage) the transaction gets executed
+    
+    } // TRANSCTION ENUM
+    
+    private int num_nodes;
+    
+    private Random rng = new Random();
+    
+    private GraphTransactionGenerator graph_txn_gen;
+    
+    public LinkbenchClient(String[] args) {
+        super(args);
+    	
+    	// Initialize the sampling table
+        ObjectHistogram<Transaction> txns =  new ObjectHistogram<Transaction>();
+        for (Transaction t : Transaction.values()) {
+            Integer weight = this.getTransactionWeight(t.callName);
+            if (weight == null) weight = t.weight;
+            txns.put(t, weight);
+        } // FOR
+        
+        assert(txns.getSampleCount() == 100) : txns;
+        this.txnWeights = new FlatHistogram<Transaction>(this.rng, txns);
+        
+        int num_txns = Transaction.values().length;
+        this.callbacks = new LinkbenchCallback[num_txns];
+        for (int i = 0; i < num_txns; i++) {
+            this.callbacks[i] = new LinkbenchCallback(i);
+        } // FOR
+        
+        for (String key : m_extraParams.keySet()) {
+            // TODO: Retrieve extra configuration parameters
+        	String value = m_extraParams.get(key);
+            if (key.equalsIgnoreCase("max_node_id")){
+            	this.num_nodes = Integer.valueOf(value);
+            }
+        } // FOR
+        
+        this.graph_txn_gen = new GraphTransactionGenerator(this.num_nodes,
+    			this.getClientHandle());
+    }
+    
+    public static void main(String args[]) {
+        BenchmarkComponent.main(LinkbenchClient.class, args, false);
+    }
+    
+    @Override
+    public void runLoop() {
+    	 Client client = this.getClientHandle();
+         try {
+             while (true) {
+                 // Figure out what page they're going to update
+                 this.runOnce();
+                 client.backpressureBarrier();
+             } // WHILE
+         } catch (Exception ex) {
+             ex.printStackTrace();
+         }
+    }
  
+    @Override
+    public boolean runOnce() throws IOException {
+    	 Transaction target = this.selectTransaction();
+         this.startComputeTime(target.displayName);
+         Object params[] = null;
+         try {
+             params = this.generateParams(target);
+         } catch (Throwable ex) {
+             throw new RuntimeException("Unexpected error when generating params for " + target, ex);
+         } finally {
+             this.stopComputeTime(target.displayName);
+         }
+         assert(params != null);
+         boolean ret = this.getClientHandle().callProcedure(this.callbacks[target.ordinal()],
+                                                            target.callName,
+                                                            params);
+
+         //if (debug.val) LOG.debug("Executing txn:" + target.callName + ",with params:" + params);
+         return ret;
+    } 
+
+    
+    private Transaction selectTransaction() {
+        return this.txnWeights.nextValue();
+    }
+    
     @Override
     public String[] getTransactionDisplayNames() {
         // Return an array of transaction names
-        String procNames[] = new String[LinkbenchProjectBuilder.PROCEDURES.length];
+    	// Return an array of transaction names
+        String procNames[] = new String[Transaction.values().length];
         for (int i = 0; i < procNames.length; i++) {
-            procNames[i] = LinkbenchProjectBuilder.PROCEDURES[i].getSimpleName();
+            procNames[i] = Transaction.values()[i].displayName;
         }
         return (procNames);
+    }
+    
+    protected Object[] generateParams(Transaction txn) {
+    	int nid;
+    	LinkbenchOperation t = graph_txn_gen.nextTransaction(txn);
+    	nid = t.nid;
+    	
+    	Object params[] = null;
+    	
+    	switch (txn) {
+    	case GET_NODE:
+    		params = new Object[]{
+        			nid
+        	};
+    		break;
+    	default:
+    		assert(false): "should not come to this point";
+    	}
+    	assert(params != null);
+    	
+    	return params;
+    	
+    	
     }
 }
