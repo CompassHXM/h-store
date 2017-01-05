@@ -21,7 +21,7 @@ public class LinkbenchGraphLoader{
 		FileReader fr = new FileReader(file);
 		br = new BufferedReader(fr);
 	}
-	public void setMaxnodeId(int max_node_id) {
+	public void SetMaxNodeId(int max_node_id) {
 		this.max_node_id = max_node_id;
 	}
 	public GraphEdge readNextEdge() throws IOException {

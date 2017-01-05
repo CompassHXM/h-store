@@ -26,6 +26,7 @@ public class LinkbenchLoader extends Loader {
     private final Random rng = new Random();
     private static final Logger LOG = Logger.getLogger(LinkbenchLoader.class);
     
+    private int max_node_id = -1;
     private LinkbenchGraphLoader graph_loader;
     
     private HashSet<Integer> nodeset;
@@ -49,7 +50,12 @@ public class LinkbenchLoader extends Loader {
             		throw new RuntimeException(e);
             	}
             }
+            else if  (key.equalsIgnoreCase("max_node_id")) {
+            	max_node_id = Integer.valueOf(value);
+            }
         }
+        
+        graph_loader.SetMaxNodeId(max_node_id);
         this.nodeset = new HashSet<>();
     }
     protected void loadLinks(Database catalog_db) throws IOException {
@@ -82,7 +88,7 @@ public class LinkbenchLoader extends Loader {
                 vt.clearRowData();
                 batchSize = 0;
             }
-        	
+            
         	nodeset.add(e.node0);
         	nodeset.add(e.node1);
     	}
