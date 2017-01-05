@@ -1,19 +1,19 @@
 CREATE TABLE nodetable (
-  id bigint NOT NULL,
+  id INTEGER NOT NULL,
   type int NOT NULL,
-  version bigint NOT NULL,
-  time int NOT NULL,
-  data varchar(255) NOT NULL,
+  version BIGINT NOT NULL,
+  time TIMESTAMP DEFAULT NULL,
+  data VARCHAR(255) DEFAULT '' NOT NULL,
   PRIMARY KEY(id)
 );
 
 CREATE TABLE linktable (
-  id1 bigint NOT NULL,
-  id2 bigint NOT NULL,
-  link_type bigint NOT NULL,
-  visibility tinyint NOT NULL,
-  data varchar(255) NOT NULL,
-  time bigint NOT NULL,
+  id1 INTEGER NOT NULL,
+  id2 INTEGER NOT NULL,
+  link_type BIGINT NOT NULL,
+  visibility tinyint DEFAULT NULL,
+  data varchar(255) DEFAULT '' NOT NULL,
+  time TIMESTAMP DEFAULT NULL,
   version int NOT NULL,
   PRIMARY KEY (id1,id2,link_type),
 );

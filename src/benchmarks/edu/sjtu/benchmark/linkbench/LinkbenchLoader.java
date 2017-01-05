@@ -1,23 +1,34 @@
 package edu.sjtu.benchmark.linkbench;
  
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Random;
 
 import org.apache.log4j.Logger;
 import org.voltdb.CatalogContext;
 import org.voltdb.catalog.*;
 import org.voltdb.VoltTable;
+import org.voltdb.VoltType;
 import org.voltdb.client.Client;
 
 import edu.brown.api.BenchmarkComponent;
 import edu.brown.api.Loader;
 import edu.brown.benchmark.wikipedia.util.TextGenerator;
 import edu.brown.catalog.CatalogUtil;
+import edu.brown.rand.RandomDistribution.FlatHistogram;
+import edu.sjtu.benchmark.linkbench.util.GraphEdge;
+import edu.sjtu.benchmark.linkbench.util.LinkbenchGraphLoader;
  
 public class LinkbenchLoader extends Loader {
  
+    public final static int configCommitCount = 1000;
     private final Random rng = new Random();
     private static final Logger LOG = Logger.getLogger(LinkbenchLoader.class);
+    
+    private LinkbenchGraphLoader graph_loader;
+    
+    private HashSet<Integer> nodeset;
     
     public static void main(String args[]) throws Exception {
         BenchmarkComponent.main(LinkbenchLoader.class, args, true);
@@ -27,24 +38,108 @@ public class LinkbenchLoader extends Loader {
     public LinkbenchLoader(String[] args) {
         super(args);
         for (String key : m_extraParams.keySet()) {
-            if (key == "network_file") {
-                String value = m_extraParams.get(key);
-                if (LOG.isDebugEnabled())
-                    LOG.debug("key = " + key + ", value = " + value);
+            String value = m_extraParams.get(key);
+
+            if  (key.equalsIgnoreCase("network_file")) {
+            	String filename = String.valueOf(value);
+            	try{
+            		graph_loader = new LinkbenchGraphLoader(filename);
+            	}
+            	catch(FileNotFoundException e){
+            		throw new RuntimeException(e);
+            	}
             }
-            // TODO: Retrieve extra configuration parameters
-        } // FOR
+        }
+        this.nodeset = new HashSet<>();
     }
-    protected void loadNodes(Database catalog_db) throws IOException {
-    	Table catalog_tbl_nodes = catalog_db.getTables().getIgnoreCase(LinkbenchConstants.TABLENAME_NODE);
-    	assert(catalog_tbl_nodes != null);
-    	VoltTable vt_nodes = CatalogUtil.getVoltTable(catalog_tbl_nodes);
-    	int num_cols_nodes = catalog_tbl_nodes.getColumns().size();
+    protected void loadLinks(Database catalog_db) throws IOException {
+    	Table catalog_tbl = catalog_db.getTables().getIgnoreCase(LinkbenchConstants.TABLENAME_LINK);
+    	assert(catalog_tbl != null);
+    	VoltTable vt = CatalogUtil.getVoltTable(catalog_tbl);
+    	int num_cols = catalog_tbl.getColumns().size();
+    	
+    	int total = 0;
+        int batchSize = 0;
+    	
+    	GraphEdge e = null;
+    	while((e = this.graph_loader.readNextEdge()) !=null ){
+    		Object row[] = new Object[num_cols];
+        	int param = 0;
+            String data = TextGenerator.randomStr(rng, rng.nextInt(64) + 10);
+        	row[param++] = e.node0;
+        	row[param++] = e.node1;
+        	row[param++] = VoltType.BIGINT;
+        	row[param++] = VoltType.NULL_TINYINT;
+        	row[param++] = data;
+        	row[param++] = VoltType.NULL_TIMESTAMP;
+        	row[param++] = 1;
+        	vt.addRow(row);
+        	
+        	batchSize++;
+            total++;
+            if ((batchSize % configCommitCount) == 0) {
+                this.loadVoltTable(catalog_tbl.getName(), vt);
+                vt.clearRowData();
+                batchSize = 0;
+            }
+        	
+        	nodeset.add(e.node0);
+        	nodeset.add(e.node1);
+    	}
+    	this.graph_loader.close();
+    	
+    	if (batchSize > 0) {
+        	this.loadVoltTable(catalog_tbl.getName(), vt);
+            vt.clearRowData();
+        }
+    	
+    }
+    
+    protected void loadnodes(Database catalog_db) throws IOException {
+    	if(nodeset.size() == 0) {
+    		throw new RuntimeException("No users provided to loadUsersGraph()");
+    	}
+    	
+    	Table catalog_tbl = catalog_db.getTables().getIgnoreCase(LinkbenchConstants.TABLENAME_NODE);
+        assert(catalog_tbl != null);
+        VoltTable vt = CatalogUtil.getVoltTable(catalog_tbl);
+        int num_cols = catalog_tbl.getColumns().size();
+        
+        int total = 0;
+        int batchSize = 0;
+        
+        for (Integer node : this.nodeset) {
+        	Object row[] = new Object[num_cols];
+            int param = 0;
+            
+            String data = TextGenerator.randomStr(rng, rng.nextInt(64) + 10);
+            row[param++] = node.intValue(); // ID
+            row[param++] = VoltType.INTEGER;
+            row[param++] = VoltType.BIGINT;
+            row[param++] = VoltType.TIMESTAMP;
+            row[param++] = data;
+            
+            
+            batchSize++;
+            total++;
+            if ((batchSize % configCommitCount) == 0) {
+                this.loadVoltTable(catalog_tbl.getName(), vt);
+                vt.clearRowData();
+                batchSize = 0;
+            }
+            
+        }
+        
+        if (batchSize > 0) {
+        	this.loadVoltTable(catalog_tbl.getName(), vt);
+            vt.clearRowData();
+        }
     	
     }
     @Override
     public void load() throws IOException {
     	final CatalogContext catalogContext = this.getCatalogContext();
-    	loadNodes(catalogContext.database);
+    	this.loadLinks(catalogContext.database);
+    	this.loadnodes(catalogContext.database);
     }
 }

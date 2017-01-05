@@ -17,7 +17,8 @@ public class LinkbenchProjectBuilder extends AbstractProjectBuilder {
  
     @SuppressWarnings("unchecked")
     public static final Class<? extends VoltProcedure> PROCEDURES[] = (Class<? extends VoltProcedure>[]) new Class<?>[] {
-        GetNode.class
+        GetNode.class,
+        GetLinkCount.class,
     };
     
     public static final String PARTITIONING[][] = new String[][] {

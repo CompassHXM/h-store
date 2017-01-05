@@ -43,4 +43,9 @@ public class LinkbenchGraphLoader{
 		
 		return new GraphEdge(node0,node1);
 	}
+	
+	public void close() throws IOException {
+		br.close();
+	}
+
 };
