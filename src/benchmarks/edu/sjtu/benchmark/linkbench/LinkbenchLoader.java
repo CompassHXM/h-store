@@ -68,11 +68,11 @@ public class LinkbenchLoader extends Loader {
             String data = TextGenerator.randomStr(rng, rng.nextInt(64) + 10);
         	row[param++] = e.node0;
         	row[param++] = e.node1;
-        	row[param++] = VoltType.BIGINT;
+        	row[param++] = VoltType.NULL_BIGINT;
         	row[param++] = VoltType.NULL_TINYINT;
         	row[param++] = data;
         	row[param++] = VoltType.NULL_TIMESTAMP;
-        	row[param++] = 1;
+        	row[param++] = (int)1;
         	vt.addRow(row);
         	
         	batchSize++;
@@ -114,9 +114,9 @@ public class LinkbenchLoader extends Loader {
             
             String data = TextGenerator.randomStr(rng, rng.nextInt(64) + 10);
             row[param++] = node.intValue(); // ID
-            row[param++] = VoltType.INTEGER;
-            row[param++] = VoltType.BIGINT;
-            row[param++] = VoltType.TIMESTAMP;
+            row[param++] = VoltType.NULL_INTEGER;
+            row[param++] = VoltType.NULL_BIGINT;
+            row[param++] = VoltType.NULL_TIMESTAMP;
             row[param++] = data;
             
             
