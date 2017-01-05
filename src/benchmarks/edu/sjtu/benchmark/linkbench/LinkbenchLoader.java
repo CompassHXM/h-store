@@ -124,7 +124,7 @@ public class LinkbenchLoader extends Loader {
             row[param++] = VoltType.NULL_BIGINT;
             row[param++] = VoltType.NULL_TIMESTAMP;
             row[param++] = data;
-            
+            vt.addRow(row);
             
             batchSize++;
             total++;

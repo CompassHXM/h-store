@@ -33,7 +33,7 @@ public class LinkbenchGraphLoader{
 			String[] sa = line.split("\\s+");
 			node0 = Integer.parseInt(sa[0]);
 			node1 = Integer.parseInt(sa[1]);
-			System.out.println(node0+" "+node1);
+			//System.out.println(node0+" "+node1);
 		}
 		
 
