@@ -7,5 +7,6 @@ public abstract class LinkbenchConstants {
     public static final String TABLENAME_LINK           = "linktable";
     
     /*transaction frequent*/
-    public static final int FREQ_GET_NODE = 100;
+    public static final int FREQ_GET_NODE = 50;
+    public static final int FREQ_GET_LINK = 50;
 };
