@@ -21,7 +21,7 @@ public class GetLink extends VoltProcedure {
 	            " where id1 = ? and link_type = ? " +
 	            " and id2 = ?"
 	    );
-	 public VoltTable[] run(int nid) {
+	 public VoltTable[] run(long nid) {
 	    	voltQueueSQL(getLink,nid);
 	    	final VoltTable result[] = voltExecuteSQL();
 	    	assert result.length == 2;
