@@ -19,7 +19,7 @@ public class GetLink extends VoltProcedure {
 	            " visibility, data, time, "  +
 	            " version from "+ LinkbenchConstants.TABLENAME_LINK +
 	            " where id1 = ? and link_type = ? " +
-	            " and id2 in (?)"
+	            " and id2 = ?"
 	    );
 	 public VoltTable[] run(int nid) {
 	    	voltQueueSQL(getLink,nid);
