@@ -18,6 +18,7 @@ public class LinkbenchProjectBuilder extends AbstractProjectBuilder {
     @SuppressWarnings("unchecked")
     public static final Class<? extends VoltProcedure> PROCEDURES[] = (Class<? extends VoltProcedure>[]) new Class<?>[] {
         GetNode.class,
+        GetLink.class,
         GetLinkCount.class,
     };
     

@@ -40,7 +40,7 @@ public class LinkbenchClient extends BenchmarkComponent {
     protected final LinkbenchCallback callbacks[];
     
     public static enum Transaction {
-    	GET_NODE("Get Node", LinkbenchConstants.FREQ_GET_NODE);
+    	GET_NODE("Get Node", LinkbenchConstants.FREQ_GET_NODE),
     	GET_LINK("Get Link", LinkbenchConstants.FREQ_GET_LINK);
         
         /**
@@ -164,6 +164,11 @@ public class LinkbenchClient extends BenchmarkComponent {
         			nid
         	};
     		break;
+    	case GET_LINK:
+        	params = new Object[]{
+        			nid
+            };
+            break;
     	default:
     		assert(false): "should not come to this point";
     	}
