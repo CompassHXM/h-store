@@ -41,6 +41,8 @@ public class GraphTransactionGenerator {
 			case GET_NODE:
 				nid = linkWeights.nextValue();
 				break;
+			case GET_LINK:
+				nid = linkWeights.nextValue();
 			default:
 				assert(false):"should not come to this point";
 		}

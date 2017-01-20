@@ -22,6 +22,7 @@ public class GetLink extends VoltProcedure {
 	            " and id2 = ?"
 	    );
 	 public VoltTable[] run(long nid) {
+		 	System.out.println("??");
 	    	voltQueueSQL(getLink,nid);
 	    	final VoltTable result[] = voltExecuteSQL();
 	    	assert result.length == 2;
