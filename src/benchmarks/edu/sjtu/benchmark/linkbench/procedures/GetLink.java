@@ -10,20 +10,14 @@ import edu.sjtu.benchmark.linkbench.LinkbenchConstants;
 
 public class GetLink extends VoltProcedure {
 	
-	 public final SQLStmt getNodes = new SQLStmt(
-	        "SELECT id2, link_type FROM " + LinkbenchConstants.TABLENAME_LINK +
+	 public final SQLStmt getLinks = new SQLStmt(
+	        "SELECT * FROM " + LinkbenchConstants.TABLENAME_LINK +
 	        " WHERE id1 = ?"
 	    );
-	 public final SQLStmt getLink = new SQLStmt(
-	            " select id1, id2, link_type,"  +
-	            " visibility, data, time, "  +
-	            " version from "+ LinkbenchConstants.TABLENAME_LINK +
-	            " where id1 = ? and link_type = ? " +
-	            " and id2 = ?"
-	    );
 	 public VoltTable[] run(long nid) {
-		 	System.out.println("??");
-	    	voltQueueSQL(getLink,nid);
+	    	voltQueueSQL(getLinks,nid);
+	    	return voltExecuteSQL(true);
+	    	/*
 	    	final VoltTable result[] = voltExecuteSQL();
 	    	assert result.length == 2;
 	    	if(Math.min(result[0].getRowCount(), LinkbenchConstants.LIMIT_LINKS) > 0){
@@ -37,8 +31,9 @@ public class GetLink extends VoltProcedure {
 	            for (int i = 0; i < result[0].getRowCount(); ++i) {
 	                types[i] = result[0].fetchRow(i).getLong(0);
 	            }
+	            */
 	            /*ZipGenerator links*/
-	            ZipfianGenerator r = new ZipfianGenerator(id2_nodes.length);
+	 /*           ZipfianGenerator r = new ZipfianGenerator(id2_nodes.length);
 	            Set<Integer> indices = new HashSet<>();
 	            for (int i = 0; i < LinkbenchConstants.LIMIT_LINKS && i < id2_nodes.length; ++i) {
 	                Integer index = r.nextInt();
@@ -52,7 +47,7 @@ public class GetLink extends VoltProcedure {
 	            }
 	            return voltExecuteSQL(true);
 	    	}
-	    	return null;
+	    	return null;*/
 	    }
 	
 }
