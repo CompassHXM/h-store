@@ -49,20 +49,34 @@ public class CommunityClient extends BenchmarkComponent {
             // get spammed, but will miss lost connections at runtime
         }
     }
- 
+
+    private int selectTransaction() {
+    	Random rand = new Random();
+        return rand.nextInt(CommunityProjectBuilder.PROCEDURES.length);
+    }
+    private Object[] genTransactionParams(int target) {
+    	Random rand = new Random();
+    	Object params[] = new Object[] { 
+    			rand.nextInt(10),
+    			rand.nextInt(10)
+    	};
+    	return params;
+    }
     @Override
     public boolean runOnce() throws IOException {
-    	Object params[];
-    	Random rand = new Random();
-        int param = rand.nextInt(CommunityProjectBuilder.PROCEDURES.length);;
-//      System.out.println("Read " + param);
-        params = new Object[]{ param };
-        String procName = CommunityProjectBuilder.PROCEDURES[param].getSimpleName();
+    	int target = this.selectTransaction();
+        counter[target] ++;
+        if(counter[target] % 20000 == 0)
+        	LOG.info("Done " + counter[target]/1000 + "K requests.");
+        
+        Callback callback = new Callback(target);              
+        String procName = CommunityProjectBuilder.PROCEDURES[target].getSimpleName();     
+        Object params[] = genTransactionParams(target);
         assert(params != null);
         
-        Callback callback = new Callback(param);
         return this.getClientHandle().callProcedure(callback, procName, params);
     } 
+    
     private class Callback implements ProcedureCallback {
         private final int idx;
  
