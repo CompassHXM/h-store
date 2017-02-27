@@ -9,13 +9,13 @@ public class GetData extends VoltProcedure {
                                                                          
     public VoltTable[] run(long[] i_id) {
     	assert i_id.length > 0;
-    	String x = "Get Data:";
+    	//String x = "Get Data:";
     	
     	for (long i : i_id){
-    		x += i;
+    		//x += i;
     		voltQueueSQL(GetItem, i);
     	}
-    	LOG.info(x);
+    	//LOG.info(x);
         
         return (voltExecuteSQL());
     }

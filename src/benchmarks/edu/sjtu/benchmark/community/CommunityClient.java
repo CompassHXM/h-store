@@ -57,8 +57,8 @@ public class CommunityClient extends BenchmarkComponent {
     private Object[] genTransactionParams(int target) {
     	Random rand = new Random();
     	Object params[] = new Object[] { 
-    			rand.nextInt(10),
-    			rand.nextInt(10)
+    			(long)rand.nextInt(10),
+    			(long)rand.nextInt(10)
     	};
     	return params;
     }
