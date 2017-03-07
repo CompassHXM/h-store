@@ -12,4 +12,5 @@ public abstract class LinkbenchConstants {
     
     /*limit*/
     public static int LIMIT_LINKS = 5; 
+    public static int LIMIT_MULTITOCH = 5; 
 };
