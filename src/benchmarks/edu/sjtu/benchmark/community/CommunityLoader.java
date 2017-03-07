@@ -45,7 +45,7 @@ public class CommunityLoader extends Loader {
         VoltTable vt = CatalogUtil.getVoltTable(catalog_tbl);
         int num_cols = catalog_tbl.getColumns().size();
         
-        for (int i=0;i<10;i++)
+        for (int i=0;i<100;i++)
         {
             Object row[] = new Object[num_cols];
             String name = TextGenerator.randomStr(rng,10);
