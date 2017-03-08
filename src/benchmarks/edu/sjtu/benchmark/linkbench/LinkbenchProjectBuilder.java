@@ -20,6 +20,7 @@ public class LinkbenchProjectBuilder extends AbstractProjectBuilder {
         GetNode.class,
         GetLink.class,
         GetLinkCount.class,
+        GetNodesFromLink.class,
     };
     
     public static final String PARTITIONING[][] = new String[][] {
