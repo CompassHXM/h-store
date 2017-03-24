@@ -57,11 +57,17 @@ public class CommunityClient extends BenchmarkComponent {
     private Object[] genTransactionParams(int target) {
     	Random rand = new Random();
     	Object params[] = new Object[] { 
-    			(long)rand.nextInt(10),
-    			(long)rand.nextInt(10)
+    			(long)rand.nextInt(10) + 1,
+    			(long)rand.nextInt(10) + 1
     	};
     	return params;
     }
+/*    private void checkParams(long i_ids[]) {
+	for ( long i : i_ids )
+		if( !(i>0 && i<12) )
+			LOG.info("Error id:" + i);
+    }*/
+
     @Override
     public boolean runOnce() throws IOException {
     	int target = this.selectTransaction();
@@ -72,6 +78,8 @@ public class CommunityClient extends BenchmarkComponent {
         Callback callback = new Callback(target);              
         String procName = CommunityProjectBuilder.PROCEDURES[target].getSimpleName();     
         Object params[] = genTransactionParams(target);
+	//checkParams(params);
+	LOG.INFO(" Params:\n" + StringUtil.join("\n", params));
         assert(params != null);
         
         return this.getClientHandle().callProcedure(callback, procName, params);

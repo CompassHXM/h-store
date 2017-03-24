@@ -49,14 +49,14 @@ public class CommunityLoader extends Loader {
         {
             Object row[] = new Object[num_cols];
             String name = TextGenerator.randomStr(rng,10);
-            row[0] = i;
+            row[0] = i+1;
             row[1] = name;
             row[2] = 10;
             
             vt.addRow(row);
             this.loadVoltTable(catalog_tbl.getName(), vt);
             vt.clearRowData();
-            LOG.info("Loading " + i);
         }
+	LOG.info("Loading 100 finished.");
     }
 }
