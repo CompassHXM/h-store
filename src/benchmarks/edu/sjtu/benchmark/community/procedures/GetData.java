@@ -12,7 +12,8 @@ public class GetData extends VoltProcedure {
     	assert i_id.length > 0;
     	
     	for (long i : i_id){
-		voltQueueSQL(GetItem, i);
+    		voltQueueSQL(GetItem, i);
+    		return (voltExecuteSQL(true));
     	}
         return (voltExecuteSQL(true));
     }
