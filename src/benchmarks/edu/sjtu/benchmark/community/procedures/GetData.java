@@ -8,12 +8,22 @@ public class GetData extends VoltProcedure {
  
 	public final SQLStmt GetItem = new SQLStmt("SELECT * FROM ITEMS WHERE I_ID = ? ");
                                                                          
-	public VoltTable[] run(long[] i_id) {
-    	assert i_id.length > 0;
+/*	public VoltTable[] run(long[] i_id) {
+    		assert i_id.length > 0;
     	
-    	for (long i : i_id){
-		voltQueueSQL(GetItem, i);
+    		for (long i : i_id){
+			voltQueueSQL(GetItem, i);
+			return (voltExecuteSQL(true));
+    		}
+	        return (voltExecuteSQL(true));
+    	}*/
+	public VoltTable[] run(long i_id) {
+    		//assert i_id.length > 0;
+    	
+    		//for (long i : i_id){
+			voltQueueSQL(GetItem, i_id);
+			return (voltExecuteSQL(true));
+    		//}
     	}
-        return (voltExecuteSQL(true));
-    }
+
 }
