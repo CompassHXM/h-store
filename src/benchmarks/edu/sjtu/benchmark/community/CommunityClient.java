@@ -78,7 +78,7 @@ public class CommunityClient extends BenchmarkComponent {
         Callback callback = new Callback(target);              
         String procName = CommunityProjectBuilder.PROCEDURES[target].getSimpleName();     
         Object params[] = genTransactionParams(target);
-        LOG.info(" Params:\n" + StringUtil.join(params, "\n"));
+        //LOG.info(" Params:\n" + StringUtil.join(params, "\n"));
         assert(params != null);
         
         return this.getClientHandle().callProcedure(callback, procName, params);
