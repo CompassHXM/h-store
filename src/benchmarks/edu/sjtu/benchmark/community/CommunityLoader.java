@@ -45,11 +45,11 @@ public class CommunityLoader extends Loader {
         VoltTable vt = CatalogUtil.getVoltTable(catalog_tbl);
         int num_cols = catalog_tbl.getColumns().size();
         
-        for (int i=0;i<100;i++)
+        for (int i=0;i<10;i++)
         {
             Object row[] = new Object[num_cols];
             String name = TextGenerator.randomStr(rng,10);
-            row[0] = i+1;
+            row[0] = i;
             row[1] = name;
             row[2] = 10;
             
