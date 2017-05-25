@@ -22,7 +22,7 @@ public class CommunityProjectBuilder extends AbstractProjectBuilder {
     
     public static final String PARTITIONING[][] = new String[][] {
         // { "TABLE NAME", "PARTITIONING COLUMN NAME" }
-        {"ITEMS", "I_ID"}
+        {"ITEMS", "id"}
     };
  
     public CommunityProjectBuilder() {

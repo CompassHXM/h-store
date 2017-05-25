@@ -6,11 +6,11 @@ import org.voltdb.*;
 ) 
 public class GetData extends VoltProcedure {
  
-	public final SQLStmt GetItem = new SQLStmt("SELECT * FROM ITEMS WHERE I_ID = ? ");
+	public final SQLStmt GetItem = new SQLStmt("SELECT * FROM items WHERE id = ? ");
                                                                          
 
-	public VoltTable[] run(long i_id) {
-			voltQueueSQL(GetItem, i_id);
+	public VoltTable[] run(long id1, long id2) {
+			voltQueueSQL(GetItem, id1);
 			return (voltExecuteSQL(true));
     	}
 

@@ -57,6 +57,6 @@ public class CommunityLoader extends Loader {
             this.loadVoltTable(catalog_tbl.getName(), vt);
             vt.clearRowData();
         }
-	LOG.info("Loading 100 finished.");
+        LOG.info("Loading 10 finished.");
     }
 }

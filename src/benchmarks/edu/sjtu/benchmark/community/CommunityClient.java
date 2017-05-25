@@ -38,7 +38,7 @@ public class CommunityClient extends BenchmarkComponent {
             Client client = this.getClientHandle();
             LOG.info("OUR Client is Running now!");
             while (true) {
-            	runOnce();
+            	this.runOnce();
                 client.backpressureBarrier();
             } // WHILE
         } catch (NoConnectionsException e) {
@@ -60,8 +60,8 @@ public class CommunityClient extends BenchmarkComponent {
     private Object[] genTransactionParams(int target) {
     	Random rand = new Random();
     	Object params[] = new Object[] { 
-    			(long)rand.nextInt(10) + 1,
-    			(long)rand.nextInt(10) + 1
+    			(long)rand.nextInt(10),
+    			(long)rand.nextInt(10)
     	};
     	return params;
     }
