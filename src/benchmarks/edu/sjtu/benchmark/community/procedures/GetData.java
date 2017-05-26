@@ -6,7 +6,7 @@ import org.voltdb.*;
 ) 
 public class GetData extends VoltProcedure {
  
-	public final SQLStmt GetItem = new SQLStmt("SELECT * FROM items WHERE id = ? ");
+	public final SQLStmt GetItem = new SQLStmt("UPDATE ITEMS SET stock = stock - 1 WHERE id = ? and stock > 0");
                                                                          
 
 	public VoltTable[] run(long id1, long id2) {
